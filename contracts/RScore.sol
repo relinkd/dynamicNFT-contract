@@ -10,11 +10,13 @@ import "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";
 
 contract RScore is ERC721, Ownable {
 
-    string private _metadataEndpoint; 
-    bool private _isPaused; 
-    uint256 private _price; 
+    struct ProtocolState {
+        string metadataEndpoint;
+        bool isPaused;
+        uint256 price;
+    }
 
-    enum ContractState { Active, Paused } 
+    ProtocolState private _protocolState;
 
     struct TokenInfo {
         uint256 tokenId;
@@ -25,27 +27,29 @@ contract RScore is ERC721, Ownable {
 
     uint256 private _counter;
 
-    constructor(string memory metadataEndpoint, uint256 price) ERC721("rScore", "rs") {
-        _metadataEndpoint = metadataEndpoint;
-        _price = price;
-        _isPaused = false;
+    constructor(ProtocolState memory protocolState) ERC721("rScore", "rs") {
+        _protocolState = protocolState;
     }
 
-    function setMetadataEndpoint(string memory newEndpoint) external onlyOwner {
-        _metadataEndpoint = newEndpoint;
+    function setProtocolState(
+        string memory metadataEndpoint,
+        bool isPaused,
+        uint256 price
+    ) external onlyOwner {
+        _protocolState = ProtocolState({
+            metadataEndpoint: metadataEndpoint,
+            isPaused: isPaused,
+            price: price
+        });
     }
 
-    function setContractState(bool newState) external onlyOwner {
-        _isPaused = newState;
-    }
-
-    function setPrice(uint256 newPrice) external onlyOwner {
-        _price = newPrice;
+    function getProtocolState() external view returns (ProtocolState memory) {
+        return _protocolState;
     }
 
     function mint(address receiver) external {
-        require(!_isPaused, "Contract is paused");
-        require(_price == 0 || _msgSender() == owner(), "Price required");
+        require(!_protocolState.isPaused, "Contract is paused");
+        require(_protocolState.price == 0 || _msgSender() == owner(), "Price required");
         require(!_ownedTokens[receiver].hasToken, "Address already owns a token");
 
         _safeMint(receiver, _counter);
@@ -54,8 +58,8 @@ contract RScore is ERC721, Ownable {
     }
 
     function bulkMint(address[] memory receivers) external onlyOwner {
-        require(!_isPaused, "Contract is paused");
-        require(_price == 0, "Price required");
+        require(!_protocolState.isPaused, "Contract is paused");
+        require(_protocolState.price == 0, "Price required");
 
         for (uint256 i = 0; i < receivers.length; i++) {
             address receiver = receivers[i];
