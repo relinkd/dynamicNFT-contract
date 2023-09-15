@@ -26,7 +26,7 @@ contract RScore is ERC721, Ownable {
 
     mapping(address => TokenInfo) private _ownedTokens; 
 
-    uint256 private _counter;
+    uint256 private _counter = 0;
 
     constructor(ProtocolState memory protocolState) ERC721("rScore", "rs") {
         _protocolState = protocolState;
@@ -76,31 +76,17 @@ contract RScore is ERC721, Ownable {
 
     }
 
-    function tokenURI(
-        uint256 tokenId
-    ) public view override returns (string memory) {
-      
-            return
-                string(
-                    abi.encodePacked(
-                        "data:application/json;base64,",
-                        Base64.encode(
-                            abi.encodePacked(
-                                '{"name":"',
-                                Strings.toString(_counter),
-                                '","description":"',
-                                Strings.toString(_counter),
-                                ' test","image":"test',
-                                '"}]}'
-                            )
-                        )
-                    )
-                );
+    function tokenURI(uint256 tokenId) public view override returns (string memory) {
+        require(_exists(tokenId), "Token does not exist");
+        
+        string memory tokenIdString = Strings.toString(tokenId);
+        
+        return string(abi.encodePacked(_protocolState.metadataEndpoint, tokenIdString));
     }
 
-    function withdrawFunds() external onlyOwner() {
+    function withdrawFunds(address withdrawAddress) external onlyOwner() {
         uint256 balance = address(this).balance;
-        if (balance > 0) TransferHelper.safeTransferETH(_msgSender(), balance);
+        if (balance > 0) TransferHelper.safeTransferETH(withdrawAddress, balance);
     }
   
 }
