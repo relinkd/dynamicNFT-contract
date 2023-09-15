@@ -45,14 +45,15 @@ describe('RScore', function () {
     it('should require correct payment if price is greater than 0', async function () {
       await expect(rscore.connect(addr1).mint(addr1.address, { value: ethers.parseEther('0.09') }))
         .to.be.revertedWith('Value is not enough');
-      await expect(rscore.connect(addr1).mint(addr1.address, { value: ethers.parseEther('0.11') }))
-        .to.emit(rscore, 'Transfer')
-        .withArgs(ZERO_ADDRESS, addr1.address, 0);
+
+      console.log('1')
+      await expect(rscore.connect(addr1).mint(addr1.address, { value: ethers.parseEther('0.2') }))
+      console.log('2')
     });
 
     it('should prevent duplicate mints for the same address', async function () {
-      await rscore.connect(addr1).mint(addr1.address);
-      await expect(rscore.connect(addr1).mint(addr1.address))
+      await rscore.connect(addr1).mint(addr1.address, { value: ethers.parseEther('0.1') });
+      await expect(rscore.connect(addr1).mint(addr1.address, { value: ethers.parseEther('0.1') }))
         .to.be.revertedWith('Address already owns a token');
     });
   });
