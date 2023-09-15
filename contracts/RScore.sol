@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.19;
 
+import "./libraries/TransferHelper.sol";
 import "@openzeppelin/contracts/utils/Base64.sol";
 import "@openzeppelin/contracts/utils/Strings.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
@@ -47,10 +48,16 @@ contract RScore is ERC721, Ownable {
         return _protocolState;
     }
 
-    function mint(address receiver) external {
+    function mint(address receiver) external payable {
         require(!_protocolState.isPaused, "Contract is paused");
-        require(_protocolState.price == 0 || _msgSender() == owner(), "Price required");
         require(!_ownedTokens[receiver].hasToken, "Address already owns a token");
+
+        if (_protocolState.price > 0 && _msgSender() != owner()) {
+            require(
+                msg.value == _protocolState.price,
+                "Value is not enough"
+            );
+        }
 
         _safeMint(receiver, _counter);
         _ownedTokens[receiver] = TokenInfo(_counter, true);
@@ -58,17 +65,15 @@ contract RScore is ERC721, Ownable {
     }
 
     function bulkMint(address[] memory receivers) external onlyOwner {
-        require(!_protocolState.isPaused, "Contract is paused");
-        require(_protocolState.price == 0, "Price required");
 
         for (uint256 i = 0; i < receivers.length; i++) {
             address receiver = receivers[i];
-            require(!_ownedTokens[receiver].hasToken, "Address already owns a token");
 
             _safeMint(receiver, _counter);
             _ownedTokens[receiver] = TokenInfo(_counter, true);
             _counter++;
         }
+
     }
 
     function tokenURI(
@@ -91,6 +96,11 @@ contract RScore is ERC721, Ownable {
                         )
                     )
                 );
+    }
+
+    function withdrawFunds() external onlyOwner() {
+        uint256 balance = address(this).balance;
+        if (balance > 0) TransferHelper.safeTransferETH(_msgSender(), balance);
     }
   
 }
