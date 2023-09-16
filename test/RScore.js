@@ -46,9 +46,7 @@ describe('RScore', function () {
       await expect(rscore.connect(addr1).mint(addr1.address, { value: ethers.parseEther('0.09') }))
         .to.be.revertedWith('Value is not enough');
 
-      console.log('1')
       await expect(rscore.connect(addr1).mint(addr1.address, { value: ethers.parseEther('0.2') }))
-      console.log('2')
     });
 
     it('should prevent duplicate mints for the same address', async function () {
@@ -82,7 +80,8 @@ describe('RScore', function () {
     it('should return correct URI', async function () {
       await rscore.connect(owner).mint(owner.address);
       const uri = await rscore.tokenURI(0);
-      expect(uri).to.equal('https://example.com/api/metadata/0');
+      
+      expect(uri).to.equal(`https://example.com/api/metadata/?tokenId=0&owner=${owner.address.toLowerCase()}`);
     });
 
     it('should revert for non-existent token', async function () {

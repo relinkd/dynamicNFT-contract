@@ -6,6 +6,7 @@ import "@openzeppelin/contracts/utils/Base64.sol";
 import "@openzeppelin/contracts/utils/Strings.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
+import "hardhat/console.sol";
 
 import "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";
 
@@ -80,8 +81,9 @@ contract RScore is ERC721, Ownable {
         require(_exists(tokenId), "Token does not exist");
         
         string memory tokenIdString = Strings.toString(tokenId);
+        string memory addressOfOwner = Strings.toHexString(uint160(ownerOf(tokenId)), 20);
         
-        return string(abi.encodePacked(_protocolState.metadataEndpoint, tokenIdString));
+        return string(abi.encodePacked(_protocolState.metadataEndpoint, "?tokenId=", tokenIdString, "&owner=", addressOfOwner));
     }
 
     function withdrawFunds(address withdrawAddress) external onlyOwner() {
