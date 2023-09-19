@@ -15,6 +15,6 @@ npx hardhat run scripts/deploy.js
 ## Useful commands
 
 ```shell
-npx hardhat --network mumbai run deploy.js
-npx hardhat --network mumbai run mint.js
+npx hardhat --network mumbai run scripts/deploy.js
+npx hardhat --network mumbai run scripts/mint.js
 ```
