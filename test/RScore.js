@@ -17,7 +17,8 @@ describe('RScore', function () {
     rscore = await RScore.deploy({
       metadataEndpoint: 'https://example.com/api/metadata/',
       isPaused: false,
-      price: ethers.parseEther('0.1')
+      price: ethers.parseEther('0.1'),
+      version: 'default'
     });
 
   });
@@ -30,13 +31,23 @@ describe('RScore', function () {
     });
 
     it('should not mint if contract is paused', async function () {
-      await rscore.setProtocolState('https://example.com/api/metadata/', true, ethers.parseEther('0.1'));
+      await rscore.setProtocolState({
+        metadataEndpoint: 'https://example.com/api/metadata/', 
+        isPaused: true, 
+        price: ethers.parseEther('0.2'), 
+        version: 'default'
+      });
       await expect(rscore.connect(addr1).mint(addr1.address))
         .to.be.revertedWith('Contract is paused');
     });
 
     it('should mint for free if price is 0', async function () {
-      await rscore.setProtocolState('https://example.com/api/metadata/', false, ethers.parseEther('0'));
+      await rscore.setProtocolState({
+        metadataEndpoint: 'https://example.com/api/metadata/', 
+        isPaused: false, 
+        price: ethers.parseEther('0'), 
+        version: 'default'
+      });
       await expect(rscore.connect(addr1).mint(addr1.address))
         .to.emit(rscore, 'Transfer')
         .withArgs(ZERO_ADDRESS, addr1.address, 0);
@@ -81,7 +92,7 @@ describe('RScore', function () {
       await rscore.connect(owner).mint(owner.address);
       const uri = await rscore.tokenURI(0);
       
-      expect(uri).to.equal(`https://example.com/api/metadata/?tokenId=0&owner=${owner.address.toLowerCase()}`);
+      expect(uri).to.equal(`https://example.com/api/metadata/?tokenId=0&owner=${owner.address.toLowerCase()}&version=default`);
     });
 
     it('should revert for non-existent token', async function () {
@@ -91,16 +102,27 @@ describe('RScore', function () {
 
   describe('setProtocolState', function () {
     it('should set protocol state', async function () {
-      await rscore.connect(owner).setProtocolState('https://example.com/api/metadata/', true, ethers.parseEther('0.2'));
+      await rscore.connect(owner).setProtocolState({
+        metadataEndpoint: 'https://example.com/api/metadata/', 
+        isPaused: true, 
+        price: ethers.parseEther('0.2'), 
+        version: 'default'
+      });
       const state = await rscore.getProtocolState();
 
       expect(state.metadataEndpoint).to.equal('https://example.com/api/metadata/');
       expect(state.isPaused).to.equal(true);
       expect(state.price).to.equal(ethers.parseEther('0.2'));
+      expect(state.version).to.equal('default');
     });
 
     it('should only be callable by owner', async function () {
-      await expect(rscore.connect(addr1).setProtocolState('https://example.com/api/metadata/', true, ethers.parseEther('0.2')))
+      await expect(rscore.connect(addr1).setProtocolState({
+        metadataEndpoint: 'https://example.com/api/metadata/', 
+        isPaused: true, 
+        price: ethers.parseEther('0.2'), 
+        version: 'default'
+      }))
         .to.be.revertedWith('Ownable: caller is not the owner');
     });
   });

@@ -15,6 +15,7 @@ contract RScore is ERC721, Ownable {
         string metadataEndpoint;
         bool isPaused;
         uint256 price;
+        string version;
     }
 
     ProtocolState private _protocolState;
@@ -32,16 +33,8 @@ contract RScore is ERC721, Ownable {
         _protocolState = protocolState;
     }
 
-    function setProtocolState(
-        string memory metadataEndpoint,
-        bool isPaused,
-        uint256 price
-    ) external onlyOwner {
-        _protocolState = ProtocolState({
-            metadataEndpoint: metadataEndpoint,
-            isPaused: isPaused,
-            price: price
-        });
+    function setProtocolState(ProtocolState memory protocolState) external onlyOwner {
+        _protocolState = protocolState;
     }
 
     function getProtocolState() external view returns (ProtocolState memory) {
@@ -82,7 +75,7 @@ contract RScore is ERC721, Ownable {
         string memory tokenIdString = Strings.toString(tokenId);
         string memory addressOfOwner = Strings.toHexString(uint160(ownerOf(tokenId)), 20);
         
-        return string(abi.encodePacked(_protocolState.metadataEndpoint, "?tokenId=", tokenIdString, "&owner=", addressOfOwner));
+        return string(abi.encodePacked(_protocolState.metadataEndpoint, "?tokenId=", tokenIdString, "&owner=", addressOfOwner, "&version=", _protocolState.version));
     }
 
     function withdrawFunds(address withdrawAddress) external onlyOwner() {
