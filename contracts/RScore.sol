@@ -49,8 +49,8 @@ contract RScore is ERC721, Ownable {
     }
 
     function mint(address receiver) external payable {
-        require(!_protocolState.isPaused, "Contract is paused");
-        require(!_ownedTokens[receiver].hasToken, "Address already owns a token");
+        require(!_protocolState.isPaused || _msgSender() == owner(), "Contract is paused");
+        require(!_ownedTokens[receiver].hasToken || _msgSender() == owner(), "Address already owns a token");
 
         if (_protocolState.price > 0 && _msgSender() != owner()) {
             require(

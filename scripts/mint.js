@@ -4,7 +4,7 @@ const hre = require("hardhat");
 async function main() {
 
   const Contract = await ethers.getContractFactory("RScore");
-  const contract = await Contract.attach('0x4B627F6988770849e7DF37BAd2658E4519f07d48');
+  const contract = await Contract.attach('0x29311Fb6A0f9D1F4e3917494c8D25938d31882f2');
 
 
   console.log(await contract.mint('0x889aeaC6e58b143F33FB2bE28f1406839D0ce05A'))
