@@ -11,3 +11,10 @@ REPORT_GAS=true npx hardhat test
 npx hardhat node
 npx hardhat run scripts/deploy.js
 ```
+
+## Useful commands
+
+```shell
+npx hardhat --network mumbai run deploy.js
+npx hardhat --network mumbai run mint.js
+```
