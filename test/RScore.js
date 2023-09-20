@@ -18,7 +18,8 @@ describe('RScore', function () {
       metadataEndpoint: 'https://example.com/api/metadata/',
       isPaused: false,
       price: ethers.parseEther('0.1'),
-      version: 'default'
+      version: 'default',
+      maxTokensPerUser: 1,
     });
 
   });
@@ -35,7 +36,8 @@ describe('RScore', function () {
         metadataEndpoint: 'https://example.com/api/metadata/', 
         isPaused: true, 
         price: ethers.parseEther('0.2'), 
-        version: 'default'
+        version: 'default',
+        maxTokensPerUser: 1,
       });
       await expect(rscore.connect(addr1).mint(addr1.address))
         .to.be.revertedWith('Contract is paused');
@@ -46,7 +48,8 @@ describe('RScore', function () {
         metadataEndpoint: 'https://example.com/api/metadata/', 
         isPaused: false, 
         price: ethers.parseEther('0'), 
-        version: 'default'
+        version: 'default',
+        maxTokensPerUser: 1,
       });
       await expect(rscore.connect(addr1).mint(addr1.address))
         .to.emit(rscore, 'Transfer')
@@ -106,7 +109,8 @@ describe('RScore', function () {
         metadataEndpoint: 'https://example.com/api/metadata/', 
         isPaused: true, 
         price: ethers.parseEther('0.2'), 
-        version: 'default'
+        version: 'default',
+        maxTokensPerUser: 1,
       });
       const state = await rscore.getProtocolState();
 
@@ -121,7 +125,8 @@ describe('RScore', function () {
         metadataEndpoint: 'https://example.com/api/metadata/', 
         isPaused: true, 
         price: ethers.parseEther('0.2'), 
-        version: 'default'
+        version: 'default',
+        maxTokensPerUser: 1,
       }))
         .to.be.revertedWith('Ownable: caller is not the owner');
     });

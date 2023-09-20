@@ -6,6 +6,7 @@ import "@openzeppelin/contracts/utils/Base64.sol";
 import "@openzeppelin/contracts/utils/Strings.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
+import "hardhat/console.sol";
 
 import "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";
 
@@ -16,16 +17,12 @@ contract RScore is ERC721, Ownable {
         bool isPaused;
         uint256 price;
         string version;
+        uint256 maxTokensPerUser;
     }
 
     ProtocolState private _protocolState;
 
-    struct TokenInfo {
-        uint256 tokenId;
-        bool hasToken;
-    }
-
-    mapping(address => TokenInfo) private _ownedTokens; 
+    mapping(address => uint256) private _ownedTokens; 
 
     uint256 private _counter = 0;
 
@@ -43,7 +40,7 @@ contract RScore is ERC721, Ownable {
 
     function mint(address receiver) external payable {
         require(!_protocolState.isPaused || _msgSender() == owner(), "Contract is paused");
-        require(!_ownedTokens[receiver].hasToken || _msgSender() == owner(), "Address already owns a token");
+        require(_ownedTokens[receiver] < _protocolState.maxTokensPerUser || _msgSender() == owner(), "Address already owns a token");
 
         if (_protocolState.price > 0 && _msgSender() != owner()) {
             require(
@@ -53,7 +50,7 @@ contract RScore is ERC721, Ownable {
         }
 
         _safeMint(receiver, _counter);
-        _ownedTokens[receiver] = TokenInfo(_counter, true);
+        _ownedTokens[receiver] = _ownedTokens[receiver]+1;
         _counter++;
     }
 
@@ -63,7 +60,7 @@ contract RScore is ERC721, Ownable {
             address receiver = receivers[i];
 
             _safeMint(receiver, _counter);
-            _ownedTokens[receiver] = TokenInfo(_counter, true);
+            _ownedTokens[receiver] = _ownedTokens[receiver]+1;
             _counter++;
         }
 
