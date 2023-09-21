@@ -26,7 +26,7 @@ contract RScore is ERC721, Ownable {
 
     uint256 private _counter = 0;
 
-    constructor(ProtocolState memory protocolState) ERC721("rScore", "rs") {
+    constructor(ProtocolState memory protocolState) ERC721("rScore_beta", "rs_beta") {
         _protocolState = protocolState;
     }
 
