@@ -54,5 +54,11 @@ module.exports = {
         count: 10
       }
     }
-  }
+  },
+  etherscan: {
+    apiKey: {
+      polygon: process.env.POLYGONSCAN_API_KEY,
+      polygonMumbai: process.env.POLYGONSCAN_API_KEY
+    }
+  },
 };

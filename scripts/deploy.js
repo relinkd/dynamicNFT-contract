@@ -1,12 +1,16 @@
 const hre = require("hardhat");
+const { ethers } = require('hardhat')
 
 async function main() {
   const Contract = await ethers.getContractFactory("RScore");
   const contract = await Contract.deploy({
     metadataEndpoint: 'https://api.relinkd.xyz/tokenMetadata',
     isPaused: false,
-    price: 0
+    price: ethers.parseEther('0'),
+    version: 'default',
+    maxTokensPerUser: 1,
   });
+  
 
   console.log('address', contract)
 }
