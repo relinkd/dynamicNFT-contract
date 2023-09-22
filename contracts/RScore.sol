@@ -5,12 +5,12 @@ import "./libraries/TransferHelper.sol";
 import "@openzeppelin/contracts/utils/Base64.sol";
 import "@openzeppelin/contracts/utils/Strings.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
-import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
+import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Enumerable.sol";
 import "hardhat/console.sol";
 
 import "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";
 
-contract RScore is ERC721, Ownable {
+contract RScore is ERC721Enumerable, Ownable {
 
     struct ProtocolState {
         string metadataEndpoint;

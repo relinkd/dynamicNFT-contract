@@ -68,6 +68,12 @@ describe('RScore', function () {
       await expect(rscore.connect(addr1).mint(addr1.address, { value: ethers.parseEther('0.1') }))
         .to.be.revertedWith('Address already owns a token');
     });
+
+    it('tokenOfOwnerByIndex check', async function () {
+      await rscore.connect(addr1).mint(addr1.address, { value: ethers.parseEther('0.1') });
+      expect(await rscore.tokenOfOwnerByIndex(addr1.address, 0)).to.equal(0);
+
+    })
   });
 
   describe('bulkMint', function () {
